@@ -1,0 +1,20 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+html, body {
+    background-color: #d7e1ed;
+    width: 100vw;
+    overflow-x: hidden;
+    font-family: "Montserrat", "Helvetica Neue",;
+}
+/* Container del writer ReactQuill */
+.ql-container {
+    border: none !important
+}
+.ql-tollbar {
+    border: none !important
+}
+.ql-editor {
+    border: none !important
+}
