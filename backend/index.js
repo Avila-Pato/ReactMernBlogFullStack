@@ -6,7 +6,7 @@ import userRouter from "./routes/user.route.js"
 
 
 const app =  express()
-console.log(process.env.MONGO)
+// console.log(process.env.MONGO)
 
 // app.get("/test", (req, res) => {
 //     res.status(200).send("It works")
