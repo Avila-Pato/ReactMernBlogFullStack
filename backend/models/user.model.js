@@ -25,12 +25,12 @@ const userSchema = new Schema(
         img: {
             type: String,
           },
-          savedPosts: {
+          savedPosts: {  //Es un array de strings con un valor predeterminado como un array vacío. Ideal para guardar IDs o referencias de publicaciones guardadas.
             type: [String],
             default: [],
           },
     },
-    { timestamps: true }
+    { timestamps: true } // Agrega automáticamente campos createdAt y updatedAt a los documentos.
 );
 
 export default mongoose.model("User", userSchema);
