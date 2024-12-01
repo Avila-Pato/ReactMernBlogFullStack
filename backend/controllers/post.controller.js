@@ -41,10 +41,13 @@
 
    const user = await User.finOne({ clerkUserId });
 
-    const post = await Post.findOneAndDelete({
+    const deletePost = await Post.findOneAndDelete({
       _id: req.params.id,
       user: user._id
     })
+    if(!deletePost){
+      return res.status(404).json("You should delete only your posts");
+    }
     res.status(200).json("Post has been deleted")
  }
 

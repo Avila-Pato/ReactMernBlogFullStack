@@ -1,10 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "./Image";
 import { Link } from "react-router-dom";
 import { SignedIn, SignedOut, UserButton } from "@clerk/clerk-react";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [ getToken ] = useState(false);
+
+  useEffect(() => {
+     getToken().then((token) => console.log(token))
+  },[getToken])
 
   return (
     <div
