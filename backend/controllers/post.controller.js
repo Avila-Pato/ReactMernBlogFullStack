@@ -26,6 +26,8 @@
      return res.status(404).json("User not found!");
    }
 
+   
+
    const newPost = await new Post.findOne(req.body)
 
     const post = await newPost.save()
