@@ -1,47 +1,55 @@
-import { Link } from "react-router-dom";
-import Image from "./../components/Image";
-import Search from "./../components/Search";
-import PostMenuActions from "./../components/PostMenuActions";
-import Comments from "./../components/Comments";
+import { Link, useParams } from "react-router-dom";
+import Image from "../components/Image";
+import PostMenuActions from "../components/PostMenuActions";
+import Search from "../components/Search";
+import Comments from "../components/Comments";
+import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "timeago.js";
+
+const fetchPost = async (slug) => {
+  const res = await axios.get(`${import.meta.env.VITE_API_URL}/posts/${slug}`);
+  return res.data;
+};
 
 const SinglePostPage = () => {
+  const { slug } = useParams();
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ["post", slug],
+    queryFn: () => fetchPost(slug),
+  });
+
+  if (isPending) return "loading...";
+  if (error) return "Something went wrong!" + error.message;
+  if (!data) return "Post not found!";
+
   return (
     <div className="flex flex-col gap-8">
-      {/* detalles */}
+      {/* detail */}
       <div className="flex gap-8">
-        <div className="lg:w3/5 flex flex-col gap-8">
+        <div className="lg:w-3/5 flex flex-col gap-8">
           <h1 className="text-xl md:text-3xl xl:text-4xl 2xl:text-5xl font-semibold">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            {data.title}
           </h1>
           <div className="flex items-center gap-2 text-gray-400 text-sm">
-            <span> Written by</span>
-            <Link className="text-blue-800">Jhon Doe</Link>
-            <span> on</span>
-            <Link className="text-blue-800">Web Design</Link>
-            <span>2 days ago</span>
+            <span>Written by</span>
+            <Link className="text-blue-800">{data.user.username}</Link>
+            <span>on</span>
+            <Link className="text-blue-800">{data.category}</Link>
+            <span>{format(data.createdAt)}</span>
           </div>
-          <p className="text-gray-500 font-medium">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </p>
+          <p className="text-gray-500 font-medium">{data.desc}</p>
         </div>
-        <div className="hidden lg:block  ">
-          <Image
-            src="postImg.jpeg"
-            className="rounded-2xl object-cover"
-            w="2050"
-          />
-        </div>
+        {data.img && (
+          <div className="hidden lg:block w-2/5">
+            <Image src={data.img} w="600" className="rounded-2xl" />
+          </div>
+        )}
       </div>
-      {/* Content */}
-      <div className="flex flex-col md:flex-row gap-6 justify-between">
-        {/* texto */}
+      {/* content */}
+      <div className="flex flex-col md:flex-row gap-12 justify-between">
+        {/* text */}
         <div className="lg:text-lg flex flex-col gap-6 text-justify">
           <p>
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias neque
@@ -128,18 +136,20 @@ const SinglePostPage = () => {
             obcaecati voluptate quaerat laborum, voluptatum dicta ipsum.
           </p>
         </div>
-        {/* Menu */}
-        <div className="px-2 h-max sticky top-8 w-full max-w-[450px]">
+        {/* menu */}
+        <div className="px-4 h-max sticky top-8">
           <h1 className="mb-4 text-sm font-medium">Author</h1>
           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <Image
-                src="userImg.jpeg"
-                className="w-12 h-12 rounded-full object-cover"
-                w="48"
-                h="48"
-              />
-              <Link className="text-blue-800">Jhon Doe</Link>
+            <div className="flex items-center gap-8">
+              {data.user.img && (
+                <Image
+                  src={data.user.img}
+                  className="w-12 h-12 rounded-full object-cover"
+                  w="48"
+                  h="48"
+                />
+              )}
+              <Link className="text-blue-800">{data.user.username}</Link>
             </div>
             <p className="text-sm text-gray-500">
               Lorem ipsum dolor sit amet consectetur
@@ -153,8 +163,8 @@ const SinglePostPage = () => {
               </Link>
             </div>
           </div>
-          <PostMenuActions />
-          <h1 className="mt-4 mb-4 text-sm font-medium">Categorias</h1>
+          <PostMenuActions post={data}/>
+          <h1 className="mt-8 mb-4 text-sm font-medium">Categories</h1>
           <div className="flex flex-col gap-2 text-sm">
             <Link className="underline">All</Link>
             <Link className="underline" to="/">
@@ -173,11 +183,11 @@ const SinglePostPage = () => {
               Marketing
             </Link>
           </div>
-          <h1 className="mt-8 mb-4 text-sm font-medium">Busqueda</h1>
-          <Search className="" />
+          <h1 className="mt-8 mb-4 text-sm font-medium">Search</h1>
+          <Search />
         </div>
       </div>
-      <Comments />
+      <Comments postId={data._id}/>
     </div>
   );
 };
